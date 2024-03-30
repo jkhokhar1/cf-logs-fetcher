@@ -1,0 +1,45 @@
+name: 'Cloudflare log fetcher'
+description: 'Fetches Cloudflare deployment logs and prints with PR'
+inputs:
+  cf_account_id:  
+    description: 'Cloudflare account id'
+    required: true
+  cf_project:  
+    description: 'Cloudflare project name'
+    required: true
+  cf_log_id:  
+    description: 'Cloudflare deployment log id'
+    required: true
+  cf_token:  
+    description: 'Cloudflare API Token'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set CF url
+      id: cf-url
+      run: echo "URL=https://api.cloudflare.com/client/v4/accounts/${{CF_ACCOUNT_ID}}/pages/projects/${{CF_PROJECT}}/deployments/${{CF_LOG_ID}}/history/logs" >> $GITHUB_OUTPUT
+      shell: bash
+      env:
+        CF_ACCOUNT_ID: ${{ inputs.cf_account_id }}
+        CF_PROJECT: ${{ inputs.cf_project }}
+        CF_LOG_ID: ${{ inputs.cf_log_id }}
+        CF_TOKEN: ${{ inputs.cf_token }}
+
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: 'Setup jq'
+      uses: dcarbone/install-jq-action@v2
+
+    - name: Fetch and print logs
+      shell: bash
+      run: |
+        curl --request GET --url ${{ steps.cf-url. }} -o logs.json
+        echo '--------- START LOGS ---------------'
+        cat logs.json | jq -r '.result.data | sort_by(.ts)[] | .line' | while IFS= read -r line; do echo -e "$line"; done      
+        echo '--------- END LOGS ---------------'
