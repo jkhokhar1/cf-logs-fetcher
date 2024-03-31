@@ -19,13 +19,13 @@ runs:
   steps:
     - name: Set CF url
       id: cf-url
-      run: echo "URL=https://api.cloudflare.com/client/v4/accounts/${{CF_ACCOUNT_ID}}/pages/projects/${{CF_PROJECT}}/deployments/${{CF_LOG_ID}}/history/logs" >> $GITHUB_OUTPUT
+      # env:
+      #   CF_ACCOUNT_ID: ${{ inputs.cf_account_id }}
+      #   CF_PROJECT: ${{ inputs.cf_project }}
+      #   CF_LOG_ID: ${{ inputs.cf_log_id }}
+      #   CF_TOKEN: ${{ inputs.cf_token }}
+      run: echo "URL=https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs" >> $GITHUB_OUTPUT
       shell: bash
-      env:
-        CF_ACCOUNT_ID: ${{ inputs.cf_account_id }}
-        CF_PROJECT: ${{ inputs.cf_project }}
-        CF_LOG_ID: ${{ inputs.cf_log_id }}
-        CF_TOKEN: ${{ inputs.cf_token }}
 
     - name: Set GitHub Path
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
