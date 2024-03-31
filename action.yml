@@ -27,11 +27,11 @@ runs:
       run: echo "URL=$(https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
+    # - name: Set GitHub Path
+    #   run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+    #   shell: bash
+    #   env:
+    #     GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v2
@@ -39,6 +39,7 @@ runs:
     - name: Fetch and print logs
       shell: bash
       run: |
+        echo ${{ steps.cf-url.URL }}
         curl --request GET --url ${{ steps.cf-url.URL }} --header "Authorization: Bearer ${{ inputs.cf_token }}" -o logs.json
         echo '--------- START LOGS ---------------'
         cat logs.json | jq -r '.result.data | sort_by(.ts)[] | .line' | while IFS= read -r line; do echo -e "$line"; done      
