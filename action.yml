@@ -39,7 +39,7 @@ runs:
     - name: Fetch and print logs
       shell: bash
       run: |
-        curl --request GET --url ${{ steps.cf-url. }} -o logs.json
+        curl --request GET --url ${{ steps.cf-url }} -o logs.json
         echo '--------- START LOGS ---------------'
         cat logs.json | jq -r '.result.data | sort_by(.ts)[] | .line' | while IFS= read -r line; do echo -e "$line"; done      
         echo '--------- END LOGS ---------------'
