@@ -40,7 +40,6 @@ runs:
       shell: bash
       run: |
         echo ${{ steps.cf-url.URL }}
-        curl --request GET --url "${{ steps.cf-url.URL }}" --header "Authorization: Bearer ${{ inputs.cf_token }}" -o logs.json
         curl --request GET --url "https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs" --header "Authorization: Bearer ${{ inputs.cf_token }}" -o logs.json
         echo '--------- START LOGS ---------------'
         cat logs.json | jq -r '.result.data | sort_by(.ts)[] | .line' | while IFS= read -r line; do echo -e "$line"; done      
