@@ -24,7 +24,7 @@ runs:
       #   CF_PROJECT: ${{ inputs.cf_project }}
       #   CF_LOG_ID: ${{ inputs.cf_log_id }}
       #   CF_TOKEN: ${{ inputs.cf_token }}
-      run: echo "URL=https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs" >> $GITHUB_OUTPUT
+      run: echo "URL=$(https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs)" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Set GitHub Path
