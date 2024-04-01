@@ -20,11 +20,16 @@ runs:
     - name: 'Setup jq'
       uses: dcarbone/install-jq-action@v2
 
+    - name: Get Deployment Bot Comments
+      id: deployment-id
+      shell: bash
+      run: |
+        COMMENTS='${{ github.event.comment.body }}'
+        echo "LOGID=$(echo $COMMENTS | grep -Eo "(http|https)://[a-zA-Z0-9./]*(${{inputs.cf_project}})+"  | sort -u | awk -F/ '{print $3}' | awk -F. '{print $1}')" >> $GITHUB_OUTPUT
     - name: Fetch and print logs
       shell: bash
       run: |
-        echo ${{ steps.cf-url.URL }}
-        curl --request GET --url "https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{inputs.cf_log_id}}/history/logs" --header "Authorization: Bearer ${{ inputs.cf_token }}" -o logs.json
+        curl --request GET --url "https://api.cloudflare.com/client/v4/accounts/${{inputs.cf_account_id}}/pages/projects/${{inputs.cf_project}}/deployments/${{steps.deployment-id.LOGID}}/history/logs" --header "Authorization: Bearer ${{ inputs.cf_token }}" -o logs.json
         echo '--------- START LOGS ---------------'
         cat logs.json | jq -r '.result.data | sort_by(.ts)[] | .line' | while IFS= read -r line; do echo -e "$line"; done      
         echo '--------- END LOGS ---------------'
