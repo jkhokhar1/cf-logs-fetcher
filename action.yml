@@ -7,9 +7,6 @@ inputs:
   cf_project:  
     description: 'Cloudflare project name'
     required: true
-  cf_log_id:  
-    description: 'Cloudflare deployment log id'
-    required: true
   cf_token:  
     description: 'Cloudflare API Token'
     required: true
@@ -26,6 +23,7 @@ runs:
       run: |
         COMMENTS='${{ github.event.comment.body }}'
         echo "LOGID=$(echo $COMMENTS | grep -Eo "(http|https)://[a-zA-Z0-9./]*(${{inputs.cf_project}})+"  | sort -u | awk -F/ '{print $3}' | awk -F. '{print $1}')" >> $GITHUB_OUTPUT
+   
     - name: Fetch and print logs
       shell: bash
       run: |
