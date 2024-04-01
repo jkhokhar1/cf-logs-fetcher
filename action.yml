@@ -22,8 +22,14 @@ runs:
       shell: bash
       run: |
         COMMENTS='${{ github.event.comment.body }}'
-        echo "LOGID=$(echo $COMMENTS | grep -Eo "(http|https)://[a-zA-Z0-9./]*(${{inputs.cf_project}})+"  | sort -u | awk -F/ '{print $3}' | awk -F. '{print $1}')" >> $GITHUB_OUTPUT
-   
+        LOGID=$(echo $COMMENTS | grep -Eo "(http|https)://[a-zA-Z0-9./]*(${{inputs.cf_project}})+"  | sort -u | awk -F/ '{print $3}' | awk -F. '{print $1}')
+        echo "LOGID: $LOGID"
+        if [ -z "$LOGID" ]; then
+          echo "Cloudflare deployment id is empty or not found. Exiting."
+          exit 1
+        fi
+        echo "LOGID=$LOGID" >> $GITHUB_OUTPUT
+
     - name: Fetch and print logs
       shell: bash
       run: |
